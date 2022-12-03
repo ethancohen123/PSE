@@ -1,5 +1,8 @@
 # Polypharmacy Side Effect (PSE) prediction
-As part of [master's thesis](http://urn.kb.se/resolve?urn=urn:nbn:se:uu:diva-446691), I have developed a chemistry-informed and interpretable Siamaes Graph Convolutional Network (SiGCN) model that predicts polypharmacy side effects of drug combinations based on their SMILES. The follow repository is a pollished vesion of the original [source code](https://github.com/amanzadi/PSE/src) that you can easily test and predict PSEs with using the pretrained models.
+
+As part of [master's thesis](http://urn.kb.se/resolve?urn=urn:nbn:se:uu:diva-446691), I have developed a chemistry-informed and interpretable Siamaes Graph Convolutional Network (SiGCN) model that predicts polypharmacy side effects of drug combinations based on their SMILES. The following repository is a pollished vesion of the original [source code](https://github.com/amanzadi/PSE/src) that you can easily test and predict PSEs with using the pretrained models.
+
+![Architecture of the Siamese Graph Convolutional Neural Network (SiGN)](/figs/model.png)
 
 
 ## Cite Us
