@@ -19,7 +19,7 @@ pip install -r requirements.txt
 
 ### 1. Predict PSE of FDA drugs with pretrained models (fast)
 
-The `fda_drugs` includes 1430 FDA approved drug on the and their corresponding Protein-Side effect Association (PSA) graphs can be accessed with `gse_graph` module. You can predict any number of combinations but the model have been primaraly evaluated only for pairwised drug combinations. Since the PSA graphs have already constructed, and the PSE and be predicted within seconds. 
+The `fda_drugs` module includes 1430 FDA approved drug on the and their corresponding Protein-Side effect Association (PSA) graphs can be accessed with `psa_graph` module. You can predict any number of combinations but the model have been primaraly evaluated only for pairwised drug combinations. Since the PSA graphs have already constructed, and the PSE and be predicted within seconds. 
 
 <details>
   <summary>Click here for the code!</summary>
@@ -40,6 +40,8 @@ pse_predict(g1,g2,n=2)
 </details>  
 
 ### 2. Predict PSE from SMILES with pretrained models (slow)
+
+If you want to find PSE of non-FDA approved drug,  
 
 <details>
   <summary>Click here for the code!</summary>
