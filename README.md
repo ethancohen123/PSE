@@ -5,17 +5,6 @@ As part of [master's thesis](http://urn.kb.se/resolve?urn=urn:nbn:se:uu:diva-446
 ![Architecture of the Siamese Graph Convolutional Neural Network (SiGN)](/figs/SiGCN.png)
 
 
-## Cite Us
-
-If you found this package useful, please cite [our paper](http://urn.kb.se/resolve?urn=urn:nbn:se:uu:diva-446691):
-```
-@article{amanzadi2021pse,
-  title={Predicting safe drug combinations with Graph Neural Networks (GNN)},
-  author={Amirhossein Amanzadi},
-  journal={Uppsala University},
-  year={2021}
-}
-```
 ## Installation
 
 ### Build from Source
@@ -30,21 +19,23 @@ pip install -r requirements.txt
 
 ### 1. Predict PSE of FDA drugs with pretrained models (fast)
 
+The `fda_drugs` includes 1430 FDA approved drug on the and their corresponding Protein-Side effect Association (PSA) graphs can be accessed with `gse_graph` module. You can predict any number of combinations but the model have been primaraly evaluated only for pairwised drug combinations. Since the PSA graphs have already constructed, and the PSE and be predicted within seconds. 
+
 <details>
   <summary>Click here for the code!</summary>
 
 ``` python
-from PSE import utils, model
+from PSE import fda_drugs, psa_graph
 
 # return the FDA approved drug dictionary
-fda_drug = utils.fda_drugs_name(all)
+fda_drug = fda_drugs(all)
 
-# extracts the corespondin Gene-Side effect (GSE) graphs
-g1 = utils.gse_graph(fda_drugs['drug1'])
-g2 = utils.gse_graph(fda_drugs['drug2'])
+# extracts the corespondin Protein-Side effect association (PSA) graphs
+g1 = psa_graph(fda_drug['drug_name_1'])
+g2 = psa_graph(fda_drug['drug_name_2'])
 
-# loads the pretraoned SiGCN model
-pse_model = model.load_sigcn()
+# loads amd executes the pre-trained SiGCN model
+pse_predict(g1,g2,n=2)
 ```
 </details>  
 
@@ -107,6 +98,19 @@ g2 = utils.gse_graph(fda_drugs['drug2'])
 pse_model = model.load_sigcn()
 ```
 </details>
+
+
+## Bibliography
+
+If you found this package useful, please cite [my thesis](http://urn.kb.se/resolve?urn=urn:nbn:se:uu:diva-446691):
+```
+@article{amanzadi2021pse,
+  title={Predicting safe drug combinations with Graph Neural Networks (GNN)},
+  author={Amirhossein Amanzadi},
+  journal={Uppsala University},
+  year={2021}
+}
+```
 
 ## Disclaimer
 The output list should be inspected manually by experts before proceeding to the wet-lab validation, and our work is still in active developement with limitations, please do not directly use the drugs.
