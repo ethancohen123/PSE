@@ -67,10 +67,10 @@ pse_predict(combs)
 
 ### 3. Interpret PSE perdiction
 
-Extracts and visulizes the common protein in PSA that could be responsible for the predicted PSEs using `pse2prot`.
+Extracts and visulizes the common protein in PSA that could be responsible for the predicted PSEs using `pred2prot`.
   
 ``` python
-from PSE import fda_drugs, psa_graph, psa_predict, pse2prot
+from PSE import fda_drugs, psa_graph, psa_predict, pred2prot
 
 # return the FDA approved drug dictionary
 fda_drug = fda_drugs(all)
@@ -86,7 +86,7 @@ combs = [g1,g2]
 PSEs = pse_predict(combs)  
   
 # return the common PSA network
-PSAs = pse2prot(combs)
+PSAs = pred2prot(combs)
 ```
 
 ## Bibliography
