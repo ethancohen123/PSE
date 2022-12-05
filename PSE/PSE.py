@@ -1,35 +1,48 @@
 # ============================ 1. Environment setup ============================
-import pandas as pd
+import dgl
+import torch
+import pickle
+import random as rd
+import gradio as gr
 import numpy as np
+import pandas as pd
+import networkx as nx
+import torch.nn as nn
+from tqdm.notebook import tqdm
+import torch.nn.functional as F
+from dgl.data import DGLDataset
 from DeepPurpose import utils
 from DeepPurpose import DTI as models
-import seaborn as sns
-import matplotlib.pyplot as plt
 
 
 # ================================ 2. Functions =================================
 
-look4smi, fda_drugs, psa_graph, psa_predict, smi2psa, pred2prot
+fda_drugs, psa_graph, pse_predict, smi2psa, pred2prot
 
-def loo2smi(SMILES):
+
     
-# looks for FDA_drugs and 
-def fda_drug(drug_name):
-   
+# looks for FDA_drugs and returns their Graph index
+def fda_drugs(drug_name):
+    '''
+    Returns the GraphID of the sprcific fda drug,
+    Or returns the entire FDA library.
+
+        1. drug name. Type "all" to get the full list.
+    '''
+    # loads the fda library
     df_fda_drugs = pd.read_csv('../data/fda_drugs.csv', sep=',')
     
     if drug_name == 'all':
-        #dic_drug_names = {df_fda_drugs['DrugID']:df_fda_drugs['Drug_Names'] for drug in df_fda_drugs}
-        return(dic_drug_names['Drug_Names'].tolist())
+        return(df_fda_drugs['Name'].tolist())
     
-    elif drug_name in dic_drug_names['Drug_Names'].tolist():
-        return(dic_drug_names.loc[dic_drug_names['Drug_Names'] == drug_name].value())
+    elif drug_name in df_fda_drugs['Name'].tolist():
+        return(df_fda_drugs['GraphID'].loc[df_fda_drugs['Name'] == drug_name].value())
     
-    elif drug_name not in dic_drug_names['Drug_Names'].tolist():
-        print('Can not find the drug name in our FDA library.\n Please use "look4smi" to search the FDA drug library with th SMILES string.')
+    elif drug_name not in df_fda_drugs['Name'].tolist():
+        print('Can not find this drug name in the FDA library.')
     
     else:
-        print('Please enter the correct drug name. Or type "all" to see the entirety of the FDA drug list.')
+        print('Please enter the correct FDA drug name. Or type "all" to see the entirety of the FDA drug library.')
         
   
 
@@ -42,7 +55,6 @@ def calc_affinity(drug, target, pre_model='MPNN_CNN_DAVIS'):
         1. SMILES string of the drug.
         2. Amino Acid Sequence of the target.
         3. Default model = 'MPNN_CNN_DAVIS'
-
     '''
     model_info = pre_model.split('_') # Seperates data and encodings
     model = models.model_pretrained(model=pre_model)
@@ -52,3 +64,70 @@ def calc_affinity(drug, target, pre_model='MPNN_CNN_DAVIS'):
     y_pred = model.predict(X_pred)  # Perdicts affinity
     return str(round(y_pred[0], 2))
 
+
+def graph_info(graph):
+    G = graph
+    print('We have %d nodes.' % G.number_of_nodes())
+    print('We have %d edges.' % G.number_of_edges())
+    print('Drawing the graph network')
+    nx_G = G.to_networkx().to_undirected()
+    pos = nx.kamada_kawai_layout(nx_G)
+    options = { "node_color": "purple",
+                "edge_color": "gray",
+                "node_size": 10,
+                "linewidths": 0,
+                "width": 0.1 }
+    nx.draw(nx_G, pos, **options)
+
+
+# model
+from dgl.nn import GraphConv
+
+class GCN(nn.Module):
+    def __init__(self, in_feats, h_feats, num_classes):
+        super(GCN, self).__init__()
+        self.conv1 = GraphConv(in_feats, h_feats)
+        self.conv2 = GraphConv(h_feats,  num_classes)
+        
+    def forward(self, g, in_feat):
+        h = self.conv1(g, in_feat)
+        h = F.relu(h)
+        h = self.conv2(g, h)
+        g.ndata['h'] = h
+        out = F.relu(dgl.mean_nodes(g, 'h'))
+        #out = F.relu(dgl.max_nodes(g, 'h'))
+        return out
+
+
+def pse_predict(Drug_A, Drug_B):
+    
+    g1 = drug_graphs[drug_labels.index(Drug_A)]
+    g2 = drug_graphs[drug_labels.index(Drug_B)]
+    pred1 = model(g1, g1.ndata['PSE'].float())
+    pred2 = model(g2, g2.ndata['PSE'].float())
+    pred_sum = pred1+pred2
+    pred = ((pred_sum)*0.5)/pred_sum.max()
+    pred_PSE = pred.ne(0)[0].tolist()  # not equal to 0
+    pred_PSE_value = pred[0].tolist()
+
+    tmp = []
+    for idx, se in enumerate(pred_PSE):
+        if se == True:
+            tmp.append([PSE_dic[idx], round(pred_PSE_value[idx], 3)])
+
+    df = pd.DataFrame(tmp, columns=['PSE', 'Value'])
+    #df['Value'] = df['Value']/df['Value'].max()
+    df = df.sort_values(by=['Value'], ascending=False)
+    df = df.iloc[15:]
+    df = df.reset_index(drop=True)
+    dic = {df['PSE'][i]: df['Value'][i] for i in rd.sample(range(len(df)), 15)}
+    #dic = {df['PSE'][i]:df['Value'][i] for i in range(len(df))}
+    #print(df)
+    return(dic)    
+# Specify a path
+conf = '../data/sigcn.pt'
+
+# Load
+model = GCN(964,200,964)
+model.load_state_dict(torch.load(conf))
+model.eval()
