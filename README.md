@@ -21,11 +21,10 @@ pip install -r requirements.txt
 
 The `fda_drugs` module includes 1430 FDA approved drug on the and their corresponding Protein-Side effect Association (PSA) graphs can be accessed with `psa_graph` module. You can predict any number of combinations but the model have been primaraly evaluated only for pairwised drug combinations. Since the PSA graphs have already constructed, and the PSE and be predicted within seconds. 
 
-<details>
-  <summary>Click here for the code!</summary>
+
 
 ``` python
-from PSE import fda_drugs, psa_graph
+from PSE import fda_drugs, psa_graph, psa_predict
 
 # return the FDA approved drug dictionary
 fda_drug = fda_drugs(all)
@@ -33,74 +32,62 @@ fda_drug = fda_drugs(all)
 # extracts the corespondin Protein-Side effect association (PSA) graphs
 g1 = psa_graph(fda_drug['drug_name_1'])
 g2 = psa_graph(fda_drug['drug_name_2'])
-
-# loads amd executes the pre-trained SiGCN model
-pse_predict(g1,g2,n=2)
+  
+# list of drugs in the combination
+combs = [g1,g2] 
+  
+# loads amd executes the pre-trained SiGCN model  
+pse_predict(combs)
 ```
-</details>  
+
+
+
 
 ### 2. Predict PSE from SMILES with pretrained models (slow)
 
-If you want to find PSE of non-FDA approved drug,  
+If you want to find PSE of non-FDA approved drug, the PSA graphs have to be created from scratch with `smi2psa` . That is why this method will take much longer to predict PSE.
 
-<details>
-  <summary>Click here for the code!</summary>
 
 ``` python
-from PSE import utils, model
+from PSE import smi2psa, psa_predict
+  
+#genrates the PSA graph from SMILES string 
+g1 = smi2psa('SMILES_1')
+g2 = smi2psa('SMILES_2')
 
-# return the FDA approved drug dictionary
-fda_drug = utils.fda_drugs_name(all)
-
-# extracts the corespondin Gene-Side effect (GSE) graphs
-g1 = utils.gse_graph(fda_drugs['drug1'])
-g2 = utils.gse_graph(fda_drugs['drug2'])
-
-# loads the pretraoned SiGCN model
-pse_model = model.load_sigcn()
+# list of drugs in the combination
+combs = [g1,g2] 
+  
+# loads amd executes the pre-trained SiGCN model  
+pse_predict(combs)
 ```
-</details>
+
+
+
 
 ### 3. Interpret PSE perdiction
 
-<details>
-  <summary>Click here for the code!</summary>
+Extracts and visulizes the common protein in PSA that could be responsible for the predicted PSEs using `pse2prot`.
   
 ``` python
-from PSE import utils, model
+from PSE import fda_drugs, psa_graph, psa_predict, pse2prot
 
 # return the FDA approved drug dictionary
-fda_drug = utils.fda_drugs_name(all)
+fda_drug = fda_drugs(all)
 
-# extracts the corespondin Gene-Side effect (GSE) graphs
-g1 = utils.gse_graph(fda_drugs['drug1'])
-g2 = utils.gse_graph(fda_drugs['drug2'])
+# extracts the corespondin Protein-Side effect association (PSA) graphs
+g1,g2,g3 = psa_graph(fda_drug['drug_name_1']), psa_graph(fda_drug['drug_name_2']), psa_graph(fda_drug['drug_name_3'])
 
-# loads the pretraoned SiGCN model
-pse_model = model.load_sigcn()
+
+# list of drugs in the combination
+combs = [g1,g2,g3] 
+  
+# loads amd executes the pre-trained SiGCN model  
+PSEs = pse_predict(combs)  
+  
+# return the common PSA network
+PSAs = pse2prot(combs)
 ```
-</details>
-
-### 4. Visualize the Graph Networks
-
-<details>
-  <summary>Click here for the code!</summary>
-
-``` python
-from PSE import utils, model
-
-# return the FDA approved drug dictionary
-fda_drug = utils.fda_drugs_name(all)
-
-# extracts the corespondin Gene-Side effect (GSE) graphs
-g1 = utils.gse_graph(fda_drugs['drug1'])
-g2 = utils.gse_graph(fda_drugs['drug2'])
-
-# loads the pretraoned SiGCN model
-pse_model = model.load_sigcn()
-```
-</details>
-
 
 ## Bibliography
 
