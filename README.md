@@ -76,11 +76,11 @@ from PSE import fda_drugs, psa_graph, psa_predict, pse2prot
 fda_drug = fda_drugs(all)
 
 # extracts the corespondin Protein-Side effect association (PSA) graphs
-g1,g2,g3 = psa_graph(fda_drug['drug_name_1']), psa_graph(fda_drug['drug_name_2']), psa_graph(fda_drug['drug_name_3'])
+g1,g2 = psa_graph(fda_drug['drug_name_1']), psa_graph(fda_drug['drug_name_2'])
 
 
 # list of drugs in the combination
-combs = [g1,g2,g3] 
+combs = [g1,g2] 
   
 # loads amd executes the pre-trained SiGCN model  
 PSEs = pse_predict(combs)  
