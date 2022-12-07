@@ -28,7 +28,7 @@ from PSE import fda_drug, psa_subgraph, pse_predict
 # return the list of FDA approved drugs
 fda_drug_list = fda_drug(all)
 
-# extracts the corespondin Protein-Side effect association (PSA) graphs
+# extracts the coresponding Protein-Side effect association (PSA) graphs
 g1 = psa_subgraph(fda_drug['drug_name_1'])
 g2 = psa_subgraph(fda_drug['drug_name_2'])
   
