@@ -1,13 +1,37 @@
 # ============================ 1. Environment setup ============================
-import pandas as pd
+import dgl
+import torch
+import pickle
+import random as rd
+import gradio as gr
 import numpy as np
+import pandas as pd
+import networkx as nx
+import torch.nn as nn
+from tqdm.notebook import tqdm
+import torch.nn.functional as F
+from dgl.data import DGLDataset
 from DeepPurpose import utils
 from DeepPurpose import DTI as models
-import seaborn as sns
-import matplotlib.pyplot as plt
 
 
 # ================================ 2. Functions =================================
+
+
+def graph_info(graph):
+    G = graph
+    print('We have %d nodes.' % G.number_of_nodes())
+    print('We have %d edges.' % G.number_of_edges())
+    print('Drawing the graph network')
+    nx_G = G.to_networkx().to_undirected()
+    pos = nx.kamada_kawai_layout(nx_G)
+    options = { "node_color": "purple",
+                "edge_color": "gray",
+                "node_size": 10,
+                "linewidths": 0,
+                "width": 0.1 }
+    nx.draw(nx_G, pos, **options)
+
 
 #Perdicts the DTI using pretrained models
 def calc_affinity(drug, target, pre_model='MPNN_CNN_DAVIS'):
@@ -28,3 +52,9 @@ def calc_affinity(drug, target, pre_model='MPNN_CNN_DAVIS'):
     y_pred = model.predict(X_pred)  # Perdicts affinity
     return str(round(y_pred[0], 2))
 
+
+def smi2psa():
+    return()
+
+def pred2prot():
+    return()

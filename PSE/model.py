@@ -20,30 +20,7 @@ from DeepPurpose import DTI as models
 fda_drugs, psa_graph, pse_predict, smi2psa, pred2prot
 
 
-    
-# looks for FDA_drugs and returns their Graph index
-def fda_drugs(drug_name):
-    '''
-    Returns the GraphID of the sprcific fda drug,
-    Or returns the entire FDA library.
-
-        1. drug name. Type "all" to get the full list.
-    '''
-    # loads the fda library
-    df_fda_drugs = pd.read_csv('../data/fda_drugs.csv', sep=',')
-    
-    if drug_name == 'all':
-        return(df_fda_drugs['Name'].tolist())
-    
-    elif drug_name in df_fda_drugs['Name'].tolist():
-        return(df_fda_drugs['GraphID'].loc[df_fda_drugs['Name'] == drug_name].value())
-    
-    elif drug_name not in df_fda_drugs['Name'].tolist():
-        print('Can not find this drug name in the FDA library.')
-    
-    else:
-        print('Please enter the correct FDA drug name. Or type "all" to see the entirety of the FDA drug library.')
-        
+ 
   
 
 #Perdicts the DTI using pretrained models
